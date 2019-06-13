@@ -60,7 +60,7 @@ class Metrics {
       }
       if (this.options.metrics[name].skipZero) {
         for (let i = md.Values.length - 1; i >= 0; --i) {
-          if (md.Values[i] === 0) {
+          if (md.Values[i] === 0) { // eslint-disable-line
             md.Counts.splice(i, 1)
             md.Values.splice(i, 1)
           }
@@ -88,7 +88,7 @@ if (require.main === module) {
       LambdaFunctionCustomer: 'raw-lambda-zexint07rust01',
     },
     metrics: {
-      LambdaInits: { unit: 'Count', dimensions: [ 'LambdaFunction' ] },
+      LambdaInits: { unit: 'Count', dimensions: ['LambdaFunction'] },
       BatchesSent: { unit: 'Count', skipZero: true },
       EventsSent: { unit: 'Count' },
     }
