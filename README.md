@@ -148,8 +148,10 @@ aws_session_token=FQ***joBQ==
 Here's how you can read the metrics back from Cloudwatch.
 
 ```sh
+# put some metrics data
 ./index.js
 
+# define our metric data queries
 read -r -d "" rawQ <<EOF
 [{
   "Id": "a$(echo $(uuidgen) | cut -d'-' -f 1)",
@@ -202,6 +204,7 @@ read -r -d "" rawQ <<EOF
 }]
 EOF
 
+# get some metrics from cloudwatch
 aws cloudwatch get-metric-data \
   --region us-west-2 \
   --metric-data-queries "${rawQ}" \
