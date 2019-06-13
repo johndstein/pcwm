@@ -93,6 +93,8 @@ class Metrics {
   }
 }
 
+exports = module.exports = Metrics
+
 if (require.main === module) {
   const options = {
     ignoreInvalidMetricName: true,
