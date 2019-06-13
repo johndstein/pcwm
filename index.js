@@ -38,7 +38,7 @@ class Metrics {
       Namespace: options.namespace
     }
   }
-  addMetric(name, value, count = 1) {
+  addMetric(name, value = 1, count = 1) {
     let dims = JSON.parse(JSON.stringify(this.options.dimensions))
     if (this.options.metrics[name].dimensions) {
       dims = {}
@@ -81,7 +81,6 @@ class Metrics {
 }
 
 if (require.main === module) {
-  /* beautify preserve:start */
   const options = {
     namespace: 'IXLEH/RawBatches',
     dimensions: {
@@ -94,9 +93,8 @@ if (require.main === module) {
       EventsSent: { unit: 'Count' },
     }
   }
-  /* beautify preserve:end */
   const m = new Metrics(options)
-  console.log(m.toString(3))
+
   m.putMetricData()
     .then((result) => {
       console.log('RESULT', result)
@@ -105,10 +103,9 @@ if (require.main === module) {
       console.log('ERROR', err)
     })
 
+  m.addMetric('LambdaInits')
   m.addMetric('BatchesSent', [3823, 0, 4], [1, 4, 2])
-  console.log(m.toString(3))
   m.addMetric('EventsSent', 0)
-  console.log(m.toString(3))
 
   m.putMetricData()
     .then((result) => {

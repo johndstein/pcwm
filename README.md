@@ -24,7 +24,7 @@ The first `m.putMetricData()` won't do anything because there's
 nothing to do.
 
 The second one will send metric data as show in **`putMetricData()`
-Params** below.
+Results** below.
 
 ```js
 const options = {
@@ -40,7 +40,7 @@ const options = {
   }
 }
 const m = new Metrics(options)
-console.log(m.toString(3))
+
 m.putMetricData()
   .then((result) => {
     console.log('RESULT', result)
@@ -49,10 +49,9 @@ m.putMetricData()
     console.log('ERROR', err)
   })
 
+m.addMetric('LambdaInits')
 m.addMetric('BatchesSent', [3823, 0, 4], [1, 4, 2])
-console.log(m.toString(3))
 m.addMetric('EventsSent', 0)
-console.log(m.toString(3))
 
 m.putMetricData()
   .then((result) => {
@@ -63,84 +62,47 @@ m.putMetricData()
   })
 ```
 
-**`putMetricData()` Params**
+**`putMetricData()` Results**
 
-```json
-{
-  "MetricData": [
-    {
-      "MetricName": "BatchesSent",
-      "Dimensions": [
-        {
-          "Name": "LambdaFunction",
-          "Value": "raw-lambda"
-        }
-      ],
-      "Timestamp": "2019-06-13T12:50:12.017Z",
-      "Unit": "Count",
-      "Counts": [
-        1,
-        2
-      ],
-      "Values": [
-        3823,
-        4
-      ]
-    },
-    {
-      "MetricName": "BatchesSent",
-      "Dimensions": [
-        {
-          "Name": "LambdaFunctionCustomer",
-          "Value": "raw-lambda-zexint07rust01"
-        }
-      ],
-      "Timestamp": "2019-06-13T12:50:12.017Z",
-      "Unit": "Count",
-      "Counts": [
-        1,
-        2
-      ],
-      "Values": [
-        3823,
-        4
-      ]
-    },
-    {
-      "MetricName": "EventsSent",
-      "Dimensions": [
-        {
-          "Name": "LambdaFunction",
-          "Value": "raw-lambda"
-        }
-      ],
-      "Timestamp": "2019-06-13T12:50:12.017Z",
-      "Unit": "Count",
-      "Counts": [
-        1
-      ],
-      "Values": [
-        0
-      ]
-    },
-    {
-      "MetricName": "EventsSent",
-      "Dimensions": [
-        {
-          "Name": "LambdaFunctionCustomer",
-          "Value": "raw-lambda-zexint07rust01"
-        }
-      ],
-      "Timestamp": "2019-06-13T12:50:12.018Z",
-      "Unit": "Count",
-      "Counts": [
-        1
-      ],
-      "Values": [
-        0
-      ]
-    }
-  ],
-  "Namespace": "IXLEH/RawBatches"
-}
+```
+[AWS cloudwatch 200 0.699s 0 retries] putMetricData({ MetricData:
+   [ { MetricName: 'LambdaInits',
+       Dimensions: [ { Name: 'LambdaFunction', Value: 'raw-lambda' }, [length]: 1 ],
+       Timestamp: 2019-06-13T12:58:56.011Z,
+       Unit: 'Count',
+       Counts: [ 1, [length]: 1 ],
+       Values: [ 1, [length]: 1 ] },
+     { MetricName: 'BatchesSent',
+       Dimensions: [ { Name: 'LambdaFunction', Value: 'raw-lambda' }, [length]: 1 ],
+       Timestamp: 2019-06-13T12:58:56.011Z,
+       Unit: 'Count',
+       Counts: [ 1, 2, [length]: 2 ],
+       Values: [ 3823, 4, [length]: 2 ] },
+     { MetricName: 'BatchesSent',
+       Dimensions:
+        [ { Name: 'LambdaFunctionCustomer',
+            Value: 'raw-lambda-zexint07rust01' },
+          [length]: 1 ],
+       Timestamp: 2019-06-13T12:58:56.011Z,
+       Unit: 'Count',
+       Counts: [ 1, 2, [length]: 2 ],
+       Values: [ 3823, 4, [length]: 2 ] },
+     { MetricName: 'EventsSent',
+       Dimensions: [ { Name: 'LambdaFunction', Value: 'raw-lambda' }, [length]: 1 ],
+       Timestamp: 2019-06-13T12:58:56.011Z,
+       Unit: 'Count',
+       Counts: [ 1, [length]: 1 ],
+       Values: [ 0, [length]: 1 ] },
+     { MetricName: 'EventsSent',
+       Dimensions:
+        [ { Name: 'LambdaFunctionCustomer',
+            Value: 'raw-lambda-zexint07rust01' },
+          [length]: 1 ],
+       Timestamp: 2019-06-13T12:58:56.011Z,
+       Unit: 'Count',
+       Counts: [ 1, [length]: 1 ],
+       Values: [ 0, [length]: 1 ] },
+     [length]: 5 ],
+  Namespace: 'IXLEH/RawBatches' })
+RESULT { ResponseMetadata: { RequestId: '04c7d5a0-8ddb-11e9-9b6f-390ace764264' } }
 ```
