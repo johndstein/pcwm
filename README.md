@@ -256,3 +256,30 @@ aws cloudwatch get-metric-data \
   "Messages": []
 }
 ```
+
+**AWS Lambda Built in Metrics**
+
+Below is the query for getting the count of invocations for a given
+Lambda function. You also get `Errors`, `Throttles`, etc.
+
+See: https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html
+
+```json
+{
+  "Id": "a$(echo $(uuidgen) | cut -d'-' -f 1)",
+  "MetricStat": {
+    "Metric": {
+      "Namespace": "AWS/Lambda",
+      "MetricName": "Invocations",
+      "Dimensions": [{
+        "Name": "FunctionName",
+        "Value": "throttler-lambda"
+      }]
+    },
+    "Period": 60,
+    "Stat": "Sum",
+    "Unit": "Count"
+  },
+  "ReturnData": true
+}
+```

@@ -32,6 +32,9 @@ class Metrics {
     //  metricName3: { unit: 'Count', dimensions: [dimensionName1, dimensionName3] },
     //  metricName4: { unit: 'Count', skipZero: true }, // don't add if value 0
     // }
+    //
+    // options.ignoreInvalidMetricName
+    //
     this.options = options
     this.params = {
       MetricData: [],
@@ -39,6 +42,14 @@ class Metrics {
     }
   }
   addMetric(name, value = 1, count = 1) {
+    if (!this.options.metrics[name]) {
+      if (this.options.ignoreInvalidMetricName) {
+        console.error(`WARNING: no metric named: ${name}`)
+      } else {
+        throw new Error(`No metric named: ${name}`)
+      }
+      return
+    }
     let dims = JSON.parse(JSON.stringify(this.options.dimensions))
     if (this.options.metrics[name].dimensions) {
       dims = {}
@@ -54,7 +65,7 @@ class Metrics {
           Value: dims[dimName]
         }],
         Timestamp: new Date(),
-        Unit: this.options.metrics[name].unit,
+        Unit: this.options.metrics[name].unit || 'Count',
         Counts: Array.isArray(count) ? count : [count],
         Values: Array.isArray(value) ? value : [value]
       }
@@ -73,7 +84,9 @@ class Metrics {
     if (this.params.MetricData.length) {
       return cloudwatch.putMetricData(this.params).promise()
     }
-    return Promise.resolve({ Info: 'No metrics to put. Doing nothing.' })
+    return Promise.resolve({
+      Info: 'No metrics to put. Doing nothing.'
+    })
   }
   toString(indent) {
     return JSON.stringify(this, null, indent)
@@ -82,15 +95,24 @@ class Metrics {
 
 if (require.main === module) {
   const options = {
+    ignoreInvalidMetricName: true,
     namespace: 'IXLEH/RawBatches',
     dimensions: {
       LambdaFunction: 'raw-lambda',
       LambdaFunctionCustomer: 'raw-lambda-zexint07rust01',
     },
     metrics: {
-      LambdaInits: { unit: 'Count', dimensions: ['LambdaFunction'] },
-      BatchesSent: { unit: 'Count', skipZero: true },
-      EventsSent: { unit: 'Count' },
+      LambdaInits: {
+        unit: 'Count',
+        dimensions: ['LambdaFunction']
+      },
+      BatchesSent: {
+        unit: 'Count',
+        skipZero: true
+      },
+      EventsSent: {
+        unit: 'Count'
+      },
     }
   }
   const m = new Metrics(options)
@@ -103,6 +125,7 @@ if (require.main === module) {
       console.log('ERROR', err)
     })
 
+  m.addMetric('SomeJunkMetric')
   m.addMetric('LambdaInits')
   m.addMetric('BatchesSent', [3823, 0, 4], [1, 4, 2])
   m.addMetric('EventsSent', 0)
