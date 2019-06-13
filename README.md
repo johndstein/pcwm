@@ -106,3 +106,150 @@ m.putMetricData()
   Namespace: 'IXLEH/RawBatches' })
 RESULT { ResponseMetadata: { RequestId: '04c7d5a0-8ddb-11e9-9b6f-390ace764264' } }
 ```
+
+## AWS Credentials
+
+You can set up your credentials for AWS as follows.
+
+**Environment Variables**
+
+```sh
+# AWS_SDK_LOAD_CONFIG Tells AWS to read region and other info from ~/.aws/config
+export AWS_SDK_LOAD_CONFIG=true
+# If you are using a profile other than the default you can specify it here.
+export AWS_PROFILE=my-profile
+```
+
+**~/.aws/config**
+
+```
+[default]
+region = us-west-2
+
+[my-profile]
+region = us-east-1
+```
+
+**~/.aws/credentials**
+
+```
+[default]
+aws_access_key_id=AKxxxxxxxxxxxxxW6
+aws_secret_access_key=n3j******H9I
+
+[my-profile]
+aws_access_key_id=AS****VZ
+aws_secret_access_key=jI*****8R8
+aws_session_token=FQ***joBQ==
+```
+
+## Get Metrics from Cloudwatch
+
+Here's how you can read the metrics back from Cloudwatch.
+
+```sh
+./index.js
+
+read -r -d "" rawQ <<EOF
+[{
+  "Id": "a$(echo $(uuidgen) | cut -d'-' -f 1)",
+  "MetricStat": {
+    "Metric": {
+      "Namespace": "IXLEH/RawBatches",
+      "MetricName": "LambdaInits",
+      "Dimensions": [{
+        "Name": "LambdaFunction",
+        "Value": "raw-lambda"
+      }]
+    },
+    "Period": 60,
+    "Stat": "Sum",
+    "Unit": "Count"
+  },
+  "ReturnData": true
+},{
+  "Id": "a$(echo $(uuidgen) | cut -d'-' -f 1)",
+  "MetricStat": {
+    "Metric": {
+      "Namespace": "IXLEH/RawBatches",
+      "MetricName": "EventsSent",
+      "Dimensions": [{
+        "Name": "LambdaFunction",
+        "Value": "raw-lambda"
+      }]
+    },
+    "Period": 60,
+    "Stat": "Sum",
+    "Unit": "Count"
+  },
+  "ReturnData": true
+},{
+  "Id": "a$(echo $(uuidgen) | cut -d'-' -f 1)",
+  "MetricStat": {
+    "Metric": {
+      "Namespace": "IXLEH/RawBatches",
+      "MetricName": "BatchesSent",
+      "Dimensions": [{
+        "Name": "LambdaFunctionCustomer",
+        "Value": "raw-lambda-zexint07rust01"
+      }]
+    },
+    "Period": 60,
+    "Stat": "Sum",
+    "Unit": "Count"
+  },
+  "ReturnData": true
+}]
+EOF
+
+aws cloudwatch get-metric-data \
+  --region us-west-2 \
+  --metric-data-queries "${rawQ}" \
+  --start-time 2019-06-13T13:17:00Z \
+  --end-time $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# --start-time $(date --date '-40 min' -u +"%Y-%m-%dT%H:%M:%SZ") \
+```
+
+**Results**
+
+```json
+{
+  "MetricDataResults": [
+    {
+      "Id": "aB78F2DD8",
+      "Label": "raw-lambda LambdaInits",
+      "Timestamps": [
+        "2019-06-13T13:17:00Z"
+      ],
+      "Values": [
+        1.0
+      ],
+      "StatusCode": "Complete"
+    },
+    {
+      "Id": "aDCD997A1",
+      "Label": "raw-lambda EventsSent",
+      "Timestamps": [
+        "2019-06-13T13:17:00Z"
+      ],
+      "Values": [
+        0.0
+      ],
+      "StatusCode": "Complete"
+    },
+    {
+      "Id": "a416EED09",
+      "Label": "raw-lambda-zexint07rust01 BatchesSent",
+      "Timestamps": [
+        "2019-06-13T13:17:00Z"
+      ],
+      "Values": [
+        3831.0
+      ],
+      "StatusCode": "Complete"
+    }
+  ],
+  "Messages": []
+}
+```
