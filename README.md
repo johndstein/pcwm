@@ -260,7 +260,7 @@ aws cloudwatch get-metric-data \
 **AWS Lambda Built in Metrics**
 
 Below is the query for getting the count of invocations for a given
-Lambda function. You also get `Errors`, `Throttles`, etc.
+Lambda function. You also get `Errors`, `Duration`, etc.
 
 See: https://docs.aws.amazon.com/lambda/latest/dg/monitoring-functions-metrics.html
 
